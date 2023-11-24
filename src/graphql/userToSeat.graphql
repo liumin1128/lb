@@ -1,0 +1,120 @@
+fragment seatFields on Seat {
+  _id
+  id
+  tags
+  disabled
+}
+
+fragment userToSeatFields on UserToSeat {
+  _id
+  createdAt
+  date
+  seat {
+    ...seatFields
+  }
+  user {
+    ...userFields
+  }
+}
+
+query FindSeats {
+  findSeats {
+    ...seatFields
+  }
+}
+
+mutation updateSeat($id: ID, $tags: [String], $disabled: Boolean) {
+  updateSeat(id: $id, input: { tags: $tags, disabled: $disabled }) {
+    success
+  }
+}
+
+mutation setSeatsTags($ids: [ID], $tags: [String]) {
+  setSeatsTags(ids: $ids, tags: $tags) {
+    success
+  }
+}
+
+mutation pushSeatsTags($ids: [ID], $tags: [String]) {
+  pushSeatsTags(ids: $ids, tags: $tags) {
+    success
+  }
+}
+
+mutation pullSeatsTags($ids: [ID], $tags: [String]) {
+  pullSeatsTags(ids: $ids, tags: $tags) {
+    success
+  }
+}
+
+query FindUserToSeats(
+  $seat: ID
+  $user: ID
+  $startDate: Float
+  $endDate: Float
+) {
+  findUserToSeats(
+    seat: $seat
+    user: $user
+    startDate: $startDate
+    endDate: $endDate
+  ) {
+    ...userToSeatFields
+  }
+}
+
+query FindUserToSeat($_id: ID!) {
+  findUserToSeat(_id: $_id) {
+    ...userToSeatFields
+  }
+}
+
+mutation CreateUserToSeat($seat: ID!, $date: Float!) {
+  createUserToSeat(input: { seat: $seat, date: $date }) {
+    ...userToSeatFields
+  }
+}
+
+mutation DeleteUserToSeat($seat: ID!, $date: Float!) {
+  deleteUserToSeat(input: { seat: $seat, date: $date }) {
+    ...userToSeatFields
+  }
+}
+
+mutation ToggleUserToSeat($seat: ID!, $date: Float!, $user: ID!) {
+  toggleUserToSeat(input: { seat: $seat, date: $date, user: $user }) {
+    ...userToSeatFields
+  }
+}
+
+subscription UserToSeatCreated(
+  $seat: ID
+  $user: ID
+  $startDate: Float
+  $endDate: Float
+) {
+  userToSeatCreated(
+    seat: $seat
+    user: $user
+    startDate: $startDate
+    endDate: $endDate
+  ) {
+    ...userToSeatFields
+  }
+}
+
+subscription UserToSeatDeleted(
+  $seat: ID
+  $user: ID
+  $startDate: Float
+  $endDate: Float
+) {
+  userToSeatDeleted(
+    seat: $seat
+    user: $user
+    startDate: $startDate
+    endDate: $endDate
+  ) {
+    ...userToSeatFields
+  }
+}

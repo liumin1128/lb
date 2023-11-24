@@ -1,0 +1,35 @@
+fragment scheduleFields on Schedule {
+  _id
+  createdAt
+  date
+  status
+  comment
+  user {
+    ...userFields
+  }
+}
+
+query FindSchedules($user: ID, $startDate: Float, $endDate: Float) {
+  findSchedules(user: $user, startDate: $startDate, endDate: $endDate) {
+    ...scheduleFields
+  }
+}
+
+mutation CreateSchedule(
+  $status: String!
+  $comment: String
+  $date: Float!
+  $user: ID
+) {
+  createSchedule(
+    input: { status: $status, comment: $comment, date: $date, user: $user }
+  ) {
+    ...scheduleFields
+  }
+}
+
+subscription scheduleCreated($user: ID, $startDate: Float, $endDate: Float) {
+  scheduleCreated(user: $user, startDate: $startDate, endDate: $endDate) {
+    ...scheduleFields
+  }
+}

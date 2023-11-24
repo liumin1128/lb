@@ -1,0 +1,50 @@
+fragment userRoleFields on UserRole {
+  _id
+  name
+  scope
+  description
+}
+
+fragment userToRoleFields on UserToRole {
+  _id
+  createdAt
+  role {
+    ...userRoleFields
+  }
+  user {
+    ...userFields
+  }
+}
+
+fragment userWithRoleFields on UserWithRole {
+  _id
+  username
+  nickname
+  avatarUrl
+  roles {
+    ...userRoleFields
+  }
+}
+
+query FindRoles {
+  findRoles {
+    ...userRoleFields
+  }
+}
+
+query FindSeatSelectionUsers($limit: Int, $skip: Int, $role: ID, $user: ID) {
+  list: findSeatSelectionUsers(
+    limit: $limit
+    skip: $skip
+    role: $role
+    user: $user
+  ) {
+    ...userWithRoleFields
+  }
+}
+
+mutation CreateUserToRole($user: ID!, $role: ID!, $scope: String!) {
+  createUserToRole(input: { user: $user, role: $role, scope: $scope }) {
+    _id
+  }
+}
