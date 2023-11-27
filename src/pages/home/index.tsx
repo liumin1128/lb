@@ -88,7 +88,7 @@ const Home: React.FunctionComponent = () => {
     <Container>
       <Box sx={{ p: 2 }}>
         <Grid container spacing={4}>
-          <Grid item md={4}>
+          <Grid item md>
             <Stack spacing={4}>
               <Stack spacing={1.5}>
                 <Typography variant="h4">衣服款式</Typography>
@@ -160,34 +160,36 @@ const Home: React.FunctionComponent = () => {
               </Stack>
 
               <Stack spacing={1.5}>
-                <Typography variant="h4">胸口位置</Typography>
+                <Stack direction="row">
+                  <Typography variant="h4">设计元素</Typography>
 
-                <Box
-                  sx={{
-                    position: 'relative',
-                    display: 'inline-block',
-                    width: 'auto',
-                  }}
-                >
-                  <Button size="small" variant="outlined">
-                    上传图章
-                  </Button>
-                  <input
-                    type="file"
-                    multiple
-                    onChange={handleFileInputChange}
-                    style={{
-                      position: 'absolute',
-                      width: '100%',
-                      height: '100%',
-                      background: 'red',
-                      zIndex: 1,
-                      left: 0,
-                      right: 0,
-                      opacity: 0,
+                  <Box sx={{ flex: 1 }}></Box>
+                  <Box
+                    sx={{
+                      position: 'relative',
+                      display: 'inline-block',
+                      width: 'auto',
                     }}
-                  />
-                </Box>
+                  >
+                    <Button variant="contained">上传图章</Button>
+                    <input
+                      type="file"
+                      multiple
+                      onChange={handleFileInputChange}
+                      style={{
+                        position: 'absolute',
+                        width: '100%',
+                        height: '100%',
+                        background: 'red',
+                        zIndex: 1,
+                        left: 0,
+                        right: 0,
+                        opacity: 0,
+                        cursor: 'pointer',
+                      }}
+                    />
+                  </Box>
+                </Stack>
 
                 {tuzhang.map((i) => {
                   return (
@@ -228,8 +230,23 @@ const Home: React.FunctionComponent = () => {
               </Stack>
             </Stack>
           </Grid>
-          <Grid item md={8}>
-            <Canvas ref={canvasRef} />
+          <Grid item>
+            <Stack spacing={2}>
+              <Stack direction="row">
+                <Typography variant="h4">预览图</Typography>
+                <Box sx={{ flex: 1 }}></Box>
+                <Button
+                  variant="contained"
+                  size="large"
+                  onClick={() => {
+                    canvasRef.current.handleSave();
+                  }}
+                >
+                  导出
+                </Button>
+              </Stack>
+              <Canvas ref={canvasRef} />
+            </Stack>
           </Grid>
         </Grid>
       </Box>

@@ -130,7 +130,7 @@ class Fabric extends React.Component<FabricProps> {
     });
   };
 
-  handleClick = () => {
+  handleSave = () => {
     const exportScale = 2; // 导出为原始分辨率的两倍
 
     // 导出合成后的图片
@@ -152,7 +152,6 @@ class Fabric extends React.Component<FabricProps> {
     return (
       <div>
         <canvas ref={this.canvasRef} id="canvas" width="512" height="600" />
-        <Button onClick={this.handleClick}>保存</Button>
       </div>
     );
   }
