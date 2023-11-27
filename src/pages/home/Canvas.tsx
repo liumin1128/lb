@@ -75,11 +75,11 @@ class Fabric extends React.Component<FabricProps> {
         // 将图片添加到canvas中
 
         img.set({
+          originX: 'center',
+          originY: 'center',
           scaleX: (canvas.width * 0.1) / img.width,
           // 图片的高度将会根据canvas的高度进行自适应缩放
           scaleY: (canvas.width * 0.1) / img.width,
-        });
-        img.set({
           left: 150,
           top: 140,
         });

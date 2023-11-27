@@ -16,15 +16,18 @@ const kuanShiList = [
 ];
 
 const weizhiList = [
-  { label: '左', key: 'left', left: 150, top: 140 },
-  { label: '中', key: 'center', left: 235, top: 140 },
-  { label: '右', key: 'right', left: 320, top: 140 },
+  { label: '左胸', key: 'left', left: 172, top: 140, rotate: 0 },
+  { label: '中间', key: 'center', left: 256, top: 140, rotate: 0 },
+  { label: '右胸', key: 'right', left: 340, top: 140, rotate: 0 },
+  { label: '左袖', key: 'leftHand', left: 140, top: 390, rotate: -45 },
+  { label: '右袖', key: 'rightHand', left: 370, top: 400, rotate: 45 },
 ];
 
 const Home: React.FunctionComponent = () => {
   const [kuanShi, setKuanShi] = React.useState('yuanling');
   const [color, setColor] = React.useState(0);
   const [zuoXiong, setZuoxiong] = React.useState();
+  const [tuzhang, setTuzhang] = React.useState([]);
   const canvasRef = createRef<any>();
 
   const handleClickKuanShi = (key: string) => {
@@ -41,7 +44,44 @@ const Home: React.FunctionComponent = () => {
 
   const addImg = async (src: string | ArrayBuffer | null) => {
     const img = await canvasRef.current.addImg(src);
-    setZuoxiong(img);
+    console.log('img');
+    console.log(img);
+    setTuzhang([...tuzhang, img]);
+    // setZuoxiong(img);
+  };
+
+  const handleUpload = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        const src = reader.result;
+        resolve(src);
+      };
+    });
+  };
+
+  const handleFileInputChange = async (e) => {
+    const imgList = [];
+    const fileList = [];
+    const cr = canvasRef.current;
+
+    if (e.target?.files && e.target?.files.length > 0) {
+      for (let i = 0; i < e.target?.files.length; i++) {
+        const file = e.target?.files[i];
+        fileList.push(file);
+      }
+    }
+
+    await Promise.all(
+      fileList.map(async (file) => {
+        const src = await handleUpload(file);
+        const img = await cr.addImg(src);
+        imgList.push(img);
+      }),
+    );
+
+    setTuzhang([...tuzhang, ...imgList]);
   };
 
   return (
@@ -135,17 +175,7 @@ const Home: React.FunctionComponent = () => {
                   <input
                     type="file"
                     multiple
-                    onChange={(e) => {
-                      if (e.target?.files && e.target?.files.length > 0) {
-                        const file = e.target.files[0];
-                        const reader = new FileReader();
-                        reader.readAsDataURL(file);
-                        reader.onload = () => {
-                          const src = reader.result;
-                          addImg(src);
-                        };
-                      }
-                    }}
+                    onChange={handleFileInputChange}
                     style={{
                       position: 'absolute',
                       width: '100%',
@@ -158,27 +188,43 @@ const Home: React.FunctionComponent = () => {
                     }}
                   />
                 </Box>
-                <Stack direction="row" spacing={1}>
-                  {zuoXiong &&
-                    weizhiList.map((item, index) => {
-                      return (
-                        <Button
-                          size="small"
-                          key={item.key}
-                          onClick={() => {
-                            zuoXiong.set({
-                              left: item.left,
-                              top: item.top,
-                              selectable: true,
-                            });
-                            canvasRef.current.canvas.renderAll();
-                          }}
-                        >
-                          {item.label}
-                        </Button>
-                      );
-                    })}
-                </Stack>
+
+                {tuzhang.map((i) => {
+                  return (
+                    <Stack key={i._element.currentSrc} direction="row">
+                      <img
+                        style={{
+                          width: 128,
+                          height: 128,
+                          border: '1px #999 solid',
+                        }}
+                        src={i._element.currentSrc}
+                        alt=""
+                      />
+
+                      <Box>
+                        {weizhiList.map((item, index) => {
+                          return (
+                            <Button
+                              key={item.key}
+                              onClick={() => {
+                                i.set({
+                                  left: item.left,
+                                  top: item.top,
+                                  selectable: true,
+                                });
+                                i.rotate(item.rotate);
+                                canvasRef.current.canvas.renderAll();
+                              }}
+                            >
+                              {item.label}
+                            </Button>
+                          );
+                        })}
+                      </Box>
+                    </Stack>
+                  );
+                })}
               </Stack>
             </Stack>
           </Grid>
