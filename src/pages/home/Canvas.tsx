@@ -35,6 +35,7 @@ function loadImg(src: string) {
 
 class Fabric extends React.Component<FabricProps> {
   private canvasRef: React.RefObject<HTMLCanvasElement>;
+
   canvas: any;
 
   constructor(props: FabricProps) {
@@ -44,32 +45,6 @@ class Fabric extends React.Component<FabricProps> {
 
   componentDidMount() {
     this.load();
-    // 图片
-    // const imgEl = document.createElement('img');
-    // imgEl.crossOrigin = 'Anonymous'; // 让图片能让所有人存取
-    // imgEl.src = '/1.jpg';
-    // imgEl.onload = () => {
-    //   const image = new fabric.Image(imgEl, {
-    //     scaleX: 0.5,
-    //     scaleY: 0.5,
-    //     angle: 0,
-    //     // angle: 15,
-    //     top: 0,
-    //     left: 0,
-    //   });
-    //   // 将 filters 实例 push 进 filters 里头
-    //   image.filters.push(new fabric.Image.filters.Contrast({ contrast: 0.2 }));
-    //   // 这边需要重整所有的滤镜效果
-    //   image.applyFilters();
-    //   canvas.add(image);
-    //   const line = new fabric.Line([10, 20, 115, 110], {
-    //     strokeWidth: 2,
-    //     stroke: 'red',
-    //     originX: 'center',
-    //     originY: 'center',
-    //   });
-    //   canvas.add(line);
-    // };
   }
 
   load = async () => {
@@ -84,39 +59,88 @@ class Fabric extends React.Component<FabricProps> {
     // canvas.add(img2);
 
     // 加载图片
-    fabric.Image.fromURL('/1.jpg', function (img) {
+    this.setBg('/images/yuanling/1.png');
+
+    // 加载另一张图片
+    // fabric.Image.fromURL('/tz1.png', function (img) {
+    //   // 将图片添加到canvas中
+    //   canvas.add(img);
+    // });
+  };
+
+  addImg = (src: string) => {
+    const canvas = this.canvas;
+    return new Promise((resolve, reject) => {
+      fabric.Image.fromURL(src, function (img: fabric.Image) {
+        // 将图片添加到canvas中
+
+        img.set({
+          scaleX: (canvas.width * 0.1) / img.width,
+          // 图片的高度将会根据canvas的高度进行自适应缩放
+          scaleY: (canvas.width * 0.1) / img.width,
+        });
+        img.set({
+          left: 150,
+          top: 140,
+        });
+
+        canvas.add(img);
+        resolve(img);
+      });
+
+      // setTimeout(() => {
+      //   img.set({
+      //     left: 300,
+      //     top: 300,
+      //   });
+      //   canvas.renderAll();
+      // }, 2000);
+    });
+  };
+
+  setBg = (src) => {
+    console.log('src');
+    console.log(src);
+    const canvas = this.canvas;
+
+    console.log('canvas.width');
+    console.log(canvas.width);
+    console.log('canvas.height');
+    console.log(canvas.height);
+    fabric.Image.fromURL(src, (img) => {
+      console.log('img');
+      console.log(img);
+
       // 设置图片为背景图并置于底部
       canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas), {
         // width: canvas.width,
         // height: canvas.height,
         originX: 'left',
         originY: 'top',
-        scaleX: 0.2,
-        scaleY: 0.2,
+        // scaleX: 1,
+        // scaleY: 1,
+        // 图片的宽度将会根据canvas的宽度进行自适应缩放
+        scaleX: canvas.width / img.width,
+        // 图片的高度将会根据canvas的高度进行自适应缩放
+        scaleY: canvas.height / img.height,
         top: 0,
         left: 0,
         selectable: false,
       });
     });
-
-    // 加载另一张图片
-    fabric.Image.fromURL('/tz1.png', function (img) {
-      // 将图片添加到canvas中
-      canvas.add(img);
-    });
   };
 
   handleClick = () => {
-    var exportScale = 2; // 导出为原始分辨率的两倍
+    const exportScale = 2; // 导出为原始分辨率的两倍
 
     // 导出合成后的图片
-    var dataURL = this.canvas.toDataURL({
+    const dataURL = this.canvas.toDataURL({
       format: 'png',
       multiplier: exportScale,
     });
 
     // 创建一个链接元素并设置下载属性
-    var link = document.createElement('a');
+    const link = document.createElement('a');
     link.href = dataURL;
     link.download = 'composite_image.png';
 
@@ -127,13 +151,7 @@ class Fabric extends React.Component<FabricProps> {
   render() {
     return (
       <div>
-        <canvas
-          ref={this.canvasRef}
-          id="canvas"
-          width="600"
-          height="800"
-        ></canvas>
-
+        <canvas ref={this.canvasRef} id="canvas" width="512" height="600" />
         <Button onClick={this.handleClick}>保存</Button>
       </div>
     );
